@@ -19,13 +19,14 @@
                 <a class="nav-link" href="/user">User list</a>
             </li>
             </#if>
+            <#if user??>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/profile">Profile</a>
+                </li>
+            </#if>
         </ul>
 
         <div class="navbar_text mr-3">${name}</div>
-        <#if name != "unknown">
-            <@l.logout/>
-        <#else>
-            <a href="http://localhost:8080/login" class="btn btn-primary" role="button" aria-pressed="true">Login</a>
-        </#if>
+        <@l.logout/>
     </div>
 </nav>
