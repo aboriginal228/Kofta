@@ -17,11 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public static PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder(8);
-    }
-
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
@@ -40,6 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .permitAll()
+                .and()
+                .rememberMe()
                 .and()
                 .logout()
                 .permitAll();

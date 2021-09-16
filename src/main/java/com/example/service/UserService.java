@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.domain.Role;
 import com.example.domain.User;
 import com.example.repo.UserRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +21,9 @@ public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
     private final MailSender2 mailSender;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${hostname}")
+    private String hostname;
 
     public UserService(UserRepo userRepo, MailSender2 mailSender, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
@@ -58,8 +62,9 @@ public class UserService implements UserDetailsService {
         if(!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "Hello, %s \n" +
-                            "Welcome to Kofta. Please, visit next link: http://localhost:8080/activate/%s",
+                            "Welcome to Kofta. Please, visit next link: http://%s/activate/%s",
                     user.getUsername(),
+                    hostname,
                     user.getActivationCode()
             );
             mailSender.send(user.getEmail(), "Activation Code", message);
