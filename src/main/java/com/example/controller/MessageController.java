@@ -3,8 +3,12 @@ package com.example.controller;
 import com.example.domain.Message;
 import com.example.domain.User;
 import com.example.repo.MessageRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.service.MessageService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,30 +27,34 @@ import java.util.Map;
 import java.util.UUID;
 
 @Controller
-public class MainController {
+public class MessageController {
 
     @Value("${upload.path}")
     private String uploadPath;
 
-    MessageRepo messageRepo;
+    private MessageRepo messageRepo;
 
-    @Autowired
-    public void setMessageRepo(MessageRepo messageRepo) {
+    private MessageService messageService;
+
+    public MessageController(MessageRepo messageRepo, MessageService messageService) {
         this.messageRepo = messageRepo;
+        this.messageService = messageService;
     }
 
     @GetMapping("/")
-    public String greeting(Map<String, Object> model) {
+    public String greeting() {
         return "greeting";
     }
 
     @GetMapping("/main")
-    public String main(@RequestParam(name = "filter", required = false, defaultValue = "") String filter, Model model) {
+    public String main(@RequestParam(name = "filter", required = false, defaultValue = "") String filter,
+                       Model model,
+                       @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Iterable<Message> messages;
-        if(filter != null && !filter.isEmpty()) messages = messageRepo.findAllByTag(filter);
-        else messages = messageRepo.findAll();
-        model.addAttribute("messages", messages);
+        Page<Message> page = messageService.messageList(pageable, filter);
+
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/main");
         model.addAttribute("filter", filter);
 
         return "main";
@@ -93,20 +101,24 @@ public class MainController {
         }
     }
 
-    @GetMapping("/user-messages/{user}")
+    @GetMapping("/user-messages/{author}")
     public String userMessages(
             @AuthenticationPrincipal User currentUser,
-            @PathVariable User user,
+            @PathVariable User author,
             Model model,
-            @RequestParam(required = false) Message message
+            @RequestParam(required = false) Message message,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        model.addAttribute("userChannel", user);
-        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
-        model.addAttribute("subscribersCount", user.getSubscribers().size());
-        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
-        model.addAttribute("messages", user.getMessages());
+
+        Page<Message> page = messageService.messageListForUser(pageable, author);
+        model.addAttribute("userChannel", author);
+        model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
+        model.addAttribute("subscribersCount", author.getSubscribers().size());
+        model.addAttribute("isSubscriber", author.getSubscribers().contains(currentUser));
+        model.addAttribute("page", page);
         model.addAttribute("message", message);
-        model.addAttribute("isCurrentUser", currentUser.equals(user));
+        model.addAttribute("isCurrentUser", currentUser.equals(author));
+        model.addAttribute("url", "/user-messages/" + author.getId());
         return "userMessages";
     }
 
@@ -132,7 +144,7 @@ public class MainController {
             messageRepo.save(message);
         }
 
-        return "redirect:/user-messages" + user;
+        return "redirect:/user-messages/" + user;
     }
 
 }

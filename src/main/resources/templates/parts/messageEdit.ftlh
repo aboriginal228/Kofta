@@ -29,7 +29,7 @@
                 </div>
             </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-            <input type="hidden" name="id" value="<#if message??>${message.id}</#if>"/>
+            <input type="hidden" name="id" value="<#if message?? && message.id??>${message.id}</#if>" />
             <div class="form-group">
                 <button class="btn btn-primary" type="submit">Save message</button>
             </div>

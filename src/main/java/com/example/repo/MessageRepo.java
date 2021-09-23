@@ -1,12 +1,20 @@
 package com.example.repo;
 
 import com.example.domain.Message;
+import com.example.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface MessageRepo extends CrudRepository<Message, Long> {
-    List<Message> findAllByTag(String tag);
+    Page<Message> findAllByTag(String tag, Pageable pageable);
+
+    Page<Message> findAll(Pageable pageable);
+
+    @Query("from Message m where m.author = :author")
+    Page<Message> findByUser(Pageable pageable, @Param("author") User author);
 }

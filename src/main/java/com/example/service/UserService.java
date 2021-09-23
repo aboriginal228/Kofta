@@ -19,15 +19,15 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     private final UserRepo userRepo;
-    private final MailSender2 mailSender;
+    private final MailSend mailSend;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${hostname}")
     private String hostname;
 
-    public UserService(UserRepo userRepo, MailSender2 mailSender, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo, MailSend mailSend, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
-        this.mailSender = mailSender;
+        this.mailSend = mailSend;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -67,7 +67,7 @@ public class UserService implements UserDetailsService {
                     hostname,
                     user.getActivationCode()
             );
-            mailSender.send(user.getEmail(), "Activation Code", message);
+            mailSend.send(user.getEmail(), "Activation Code", message);
         }
     }
 
