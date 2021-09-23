@@ -28,4 +28,12 @@ public class MessageService {
     public Page<Message> messageListForUser(Pageable pageable, User author) {
         return messageRepo.findByUser(pageable, author);
     }
+
+    public Page<Message> findAll(Pageable pageable) {
+        return messageRepo.findAll(pageable);
+    }
+
+    public void save(Message message) {
+        messageRepo.save(message);
+    }
 }

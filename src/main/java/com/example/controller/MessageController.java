@@ -32,12 +32,9 @@ public class MessageController {
     @Value("${upload.path}")
     private String uploadPath;
 
-    private MessageRepo messageRepo;
-
     private MessageService messageService;
 
-    public MessageController(MessageRepo messageRepo, MessageService messageService) {
-        this.messageRepo = messageRepo;
+    public MessageController(MessageService messageService) {
         this.messageService = messageService;
     }
 
@@ -66,7 +63,8 @@ public class MessageController {
             @Valid Message message,
             BindingResult bindingResult,
             Model model,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) throws IOException {
 
         message.setAuthor(user);
@@ -77,10 +75,11 @@ public class MessageController {
         } else {
             saveFile(message, file);
             model.addAttribute("message", null);
-            messageRepo.save(message);
+            messageService.save(message);
         }
 
-        model.addAttribute("messages", messageRepo.findAll());
+        model.addAttribute("page", messageService.findAll(pageable));
+        model.addAttribute("url", "/main");
         return "main";
     }
 
@@ -141,7 +140,7 @@ public class MessageController {
 
             saveFile(message, file);
 
-            messageRepo.save(message);
+            messageService.save(message);
         }
 
         return "redirect:/user-messages/" + user;
