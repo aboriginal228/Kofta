@@ -27,7 +27,7 @@ public class MessageService {
     }
 
     public Page<MessageDto> messageListForUser(Pageable pageable, User author, User user) {
-        return messageRepo.findByUser(pageable, author, user);
+        return messageRepo.findByUser(pageable, user, author);
     }
 
     public Page<MessageDto> findAll(Pageable pageable, User user) {

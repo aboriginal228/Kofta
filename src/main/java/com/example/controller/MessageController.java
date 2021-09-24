@@ -115,7 +115,7 @@ public class MessageController {
             @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
-        Page<MessageDto> page = messageService.messageListForUser(pageable, author, currentUser);
+        Page<MessageDto> page = messageService.messageListForUser(pageable, currentUser, author);
         model.addAttribute("userChannel", author);
         model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
         model.addAttribute("subscribersCount", author.getSubscribers().size());
