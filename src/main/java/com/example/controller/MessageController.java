@@ -3,8 +3,6 @@ package com.example.controller;
 import com.example.domain.Message;
 import com.example.domain.User;
 import com.example.domain.dto.MessageDto;
-import com.example.repo.MessageRepo;
-import com.example.repo.UserRepo;
 import com.example.service.MessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;

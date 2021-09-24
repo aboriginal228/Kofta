@@ -1,9 +1,7 @@
 package com.example.util;
 
-import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +11,7 @@ public class RedirectInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView != null) {
             String args = request.getQueryString() != null ? request.getQueryString() : "";
-            String url = request.getRequestURI().toString() + "?" + args;
+            String url = request.getRequestURI() + (args.equals("") ? "" : "?" + args);
             response.setHeader("Turbolinks-Location", url);
         }
     }
